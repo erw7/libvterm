@@ -67,6 +67,19 @@
  * Latest version: http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
  */
 
+static VTermUserUnicodeWidth *user_unicode_width = NULL;
+static VTermUserUnicodeIsCombining *user_unicode_is_combining = NULL;
+
+void vterm_set_user_unicode_width(VTermUserUnicodeWidth *func)
+{
+  user_unicode_width = func;
+}
+
+void vterm_set_user_unicode_is_combining(VTermUserUnicodeIsCombining *func)
+{
+  user_unicode_is_combining = func;
+}
+
 struct interval {
   int first;
   int last;
@@ -325,6 +338,9 @@ static const struct interval fullwidth[] = {
 
 INTERNAL int vterm_unicode_width(uint32_t codepoint)
 {
+  if (user_unicode_width) {
+    return user_unicode_width(codepoint);
+  }
   if(bisearch(codepoint, fullwidth, sizeof(fullwidth) / sizeof(fullwidth[0]) - 1))
     return 2;
 
@@ -333,5 +349,8 @@ INTERNAL int vterm_unicode_width(uint32_t codepoint)
 
 INTERNAL int vterm_unicode_is_combining(uint32_t codepoint)
 {
+  if (user_unicode_is_combining) {
+    return user_unicode_is_combining(codepoint);
+  }
   return bisearch(codepoint, combining, sizeof(combining) / sizeof(struct interval) - 1);
 }

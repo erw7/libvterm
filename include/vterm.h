@@ -526,6 +526,12 @@ void vterm_copy_cells(VTermRect dest,
                       void (*copycell)(VTermPos dest, VTermPos src, void *user),
                       void *user);
 
+typedef int VTermUserUnicodeWidth(uint32_t codepoint);
+void vterm_set_user_unicode_width(VTermUserUnicodeWidth *func);
+
+typedef int VTermUserUnicodeIsCombining(uint32_t codepoint);
+void vterm_set_user_unicode_is_combining(VTermUserUnicodeIsCombining *func);
+
 #ifdef __cplusplus
 }
 #endif
